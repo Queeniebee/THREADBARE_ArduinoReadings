@@ -18,5 +18,19 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    
+    void urlResponse(ofHttpResponse & response);
 		
+    ofSerial serial;
+    ofBuffer buffer;
+    
+    ofVideoPlayer video;
+    
+    ofTrueTypeFont font;
+    string message;
+    
+    int x; int y; int z;
+    int FSR = 10;
+
+    
 };
