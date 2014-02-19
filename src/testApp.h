@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxOpenCv.h"
 
 class testApp : public ofBaseApp{
 
@@ -22,15 +23,16 @@ class testApp : public ofBaseApp{
     void urlResponse(ofHttpResponse & response);
 		
     ofSerial serial;
-    ofBuffer buffer;
+    ofFbo fbo, fbo2, fbo3, fbo4;
     
-    ofVideoPlayer video;
+    ofVideoPlayer video, video2, video3, video4;
     
     ofTrueTypeFont font;
     string message;
     
     int x; int y; int z;
     int FSR = 10;
-
+    float playhead, playhead2, playhead3, playhead4;
+    
     
 };

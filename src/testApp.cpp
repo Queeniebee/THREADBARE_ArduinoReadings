@@ -9,30 +9,35 @@ void testApp::setup(){
     serial.setup(0,9600);
     
     ofSetVerticalSync(true);
-//    ofSetFrameRate(30);
-
-    ofSetWindowShape(800, 600);
+//    ofSetFrameRate(60);
+    ofSetWindowShape(1024,768);
     ofSetCircleResolution(100);
-    ofBackground(255);
+    
+    fbo.allocate(400, 300, GL_RGBA);
+    fbo2.allocate(400, 300, GL_RGBA);
+    fbo3.allocate(400, 300, GL_RGBA);
+    fbo4.allocate(400, 300, GL_RGBA);
     
     x = 10;
     y = 10;
     z = 10;
     
-    message = ("Reading one byte at a time");
-    font.loadFont("liberationsans-bold-webfont.ttf", 20, true, false, true);
+    video.loadMovie("test_video2/Resources/test_video2.mov");
 
-//    video.loadMovie("GoodHair_JFleurantin.mov");
+    video.play();
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
 
+ 
     int bytesRequired = 9;
     int bytesRemaining = bytesRequired;
+    int bytesPreventOverwrite = bytesRequired - bytesRemaining;
 
     unsigned char bytesReturned[bytesRequired];
-
+/*
+// Documentation Way 
     while (bytesRemaining > 0) {
     
         if(serial.available() > 0){
@@ -41,19 +46,34 @@ void testApp::update(){
             int bytesPreventOverwrite = bytesRequired - bytesRemaining;
             int result = serial.readBytes(&bytesReturned[bytesPreventOverwrite], bytesRemaining);
             
+            if ( result == OF_SERIAL_ERROR )
+            {
+                // something bad happened
+                ofLog( OF_LOG_ERROR, "unrecoverable error reading from serial" );
+                // bail out
+                break;
+            }
+            else if ( result == OF_SERIAL_NO_DATA )
+            {
+                // nothing was read, try again
+            }
+            else
+            {
+            
             if (bytesReturned[result]=='1') {
-                x = (int)bytesReturned[result+1];
+                x = bytesReturned[result+1];
             } if (bytesReturned[result+2]=='2'){
-                y = (int)bytesReturned[result+3];
+                y = bytesReturned[result+3];
                 
             } if (bytesReturned[result+4]=='3'){
-                z = (int)bytesReturned[result+5];
+                z = bytesReturned[result+5];
                 
             } if(bytesReturned[result+6]=='4'){
-                FSR = (int)bytesReturned[result+7];
+                FSR = bytesReturned[result+7];
             }
 
              bytesRemaining -= result;
+            }
         
             cout<<"From the Serial Port:"<<endl;
         cout<<"A0: "<<x<<" A1: "<<y<<" A2: "<<z<<" A3: "<<FSR<<endl;
@@ -62,12 +82,74 @@ void testApp::update(){
 
     }
     }
+ */
+    
+   if(serial.available() > 0){
+//Found Code Way
+    serial.readBytes(&bytesReturned[bytesPreventOverwrite], bytesRemaining);
+        if (bytesReturned[0]=='1') {
+            x = bytesReturned[1];
+        } if (bytesReturned[2]=='2'){
+            y = bytesReturned[3];
+            
+        } if (bytesReturned[4]=='3'){
+            z = bytesReturned[5];
+            
+        } if(bytesReturned[6]=='4'){
+            FSR = bytesReturned[7];
+        }
+
+        cout<<"From the Serial Port:"<<endl;
+        cout<<"A0: "<<x<<" A1: "<<y<<" A2: "<<z<<" A3: "<<FSR<<endl;
+        serial.flush();
+        serial.writeByte('A');
+    
+    }
+
+    video.update();
+    
+    playhead = ofMap(FSR, 0, 255, 0, 0.25, true);
+    playhead2 = ofMap(x, 0, 255, 0.25, 0.5, true);
+    playhead3 = ofMap(y, 0, 255, 0.5, 0.75, true);
+    playhead4 = ofMap(z, 0, 255, 0.75, 1, true);
+
+    fbo.begin();
+    ofSetColor(255, 255, 255, 255);
+    ofRect(0,0,400,300);
+    video.draw(0, 0, 400.0, 300.0);
+    video.setPosition(playhead);
+    fbo.end();
+    
+    fbo2.begin();
+    ofSetColor(255, 255, 255, 255);
+    ofRect(0,0,400,300);
+    video.draw(0, 0, 400.0, 300.0);
+    fbo2.end();
+
+    fbo3.begin();
+    ofSetColor(255, 255, 255, 255);
+    ofRect(0,0,400,300);
+    video.draw(0, 0, 400.0, 300.0);
+    fbo3.end();
+    
+    fbo4.begin();
+    ofSetColor(255, 255, 255, 255);
+    ofRect(0,0,400,300);
+    video.draw(0, 0, 400.0, 300.0);
+    fbo4.end();
+    
 }
 //--------------------------------------------------------------
 void testApp::draw(){
+        
+    fbo.draw(10.0, 150.0);
+    fbo2.draw(430.0, 150.0);
+    
+    fbo3.draw(10.0, 460.0);
+    fbo4.draw(430.0, 460.0);
     
     ofSetColor(10, 10, FSR);
-    ofCircle(10,100,20);
+    ofCircle(40,100,20);
     
     ofSetColor(10, 10, x);
     ofCircle(100,100,20);
@@ -75,10 +157,8 @@ void testApp::draw(){
     ofSetColor(10, 10, y);
     ofCircle(200,100,20);
 
-    ofSetColor(10, 10, z);
+    ofSetColor(10, 0, z);
     ofCircle(300,100,20);
-
-    
     
     cout<<"On the Screen"<<endl;
     cout<<"A0: "<<x<<" A1: "<<y<<" A2: "<<z<<" A3: "<<FSR<<endl;
