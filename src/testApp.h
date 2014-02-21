@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 
+#define NUM_VIDS 4
+
 class testApp : public ofBaseApp{
 
 	public:
@@ -23,12 +25,10 @@ class testApp : public ofBaseApp{
     void urlResponse(ofHttpResponse & response);
 		
     ofSerial serial;
-    ofFbo fbo, fbo2, fbo3, fbo4;
+    ofFbo fbo[NUM_VIDS];
+    string paths[NUM_VIDS];
     
-    ofVideoPlayer video, video2, video3, video4;
-    
-    ofTrueTypeFont font;
-    string message;
+    ofVideoPlayer video[NUM_VIDS];
     
     int x; int y; int z;
     int FSR = 10;

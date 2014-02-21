@@ -10,21 +10,30 @@ void testApp::setup(){
     
     ofSetVerticalSync(true);
 //    ofSetFrameRate(60);
-    ofSetWindowShape(1024,768);
+//    ofSetWindowShape(1024,768);
     ofSetCircleResolution(100);
-    
-    fbo.allocate(400, 300, GL_RGBA);
-    fbo2.allocate(400, 300, GL_RGBA);
-    fbo3.allocate(400, 300, GL_RGBA);
-    fbo4.allocate(400, 300, GL_RGBA);
     
     x = 10;
     y = 10;
     z = 10;
     
-    video.loadMovie("test_video2/Resources/test_video2.mov");
+    for(int j = 0; j < NUM_VIDS; j++){
+        fbo[j].allocate(400, 300, GL_RGBA);
+        
+    }
+    
+    paths[0] = "handsTrees.mov";
+    paths[1] = "test_video/Resources/test_video.mov";
+    paths[2] = "test_video2/Resources/test_video2.mov";
+    paths[3] = "handsTrees2.mov";
+    
+    for(int i = 0; i < NUM_VIDS; i++){
+        video[i].loadMovie(paths[i]);
+        video[i].play();
+    }
+    
 
-    video.play();
+    
 }
 
 //--------------------------------------------------------------
@@ -106,20 +115,25 @@ void testApp::update(){
     
     }
 
-    video.update();
+    for (int i = 0; i < NUM_VIDS; i++) {
+		video[i].update();
+	}
     
-    playhead = ofMap(FSR, 0, 255, 0, 0.25, true);
-    playhead2 = ofMap(x, 0, 255, 0.25, 0.5, true);
-    playhead3 = ofMap(y, 0, 255, 0.5, 0.75, true);
-    playhead4 = ofMap(z, 0, 255, 0.75, 1, true);
-
-    fbo.begin();
-    ofSetColor(255, 255, 255, 255);
-    ofRect(0,0,400,300);
-    video.draw(0, 0, 400.0, 300.0);
-    video.setPosition(playhead);
-    fbo.end();
+//    playhead = ofMap(FSR, 0, 255, 0, 0.25, true);
+//    playhead2 = ofMap(x, 0, 255, 0.25, 0.5, true);
+//    playhead3 = ofMap(y, 0, 255, 0.5, 0.75, true);
+//    playhead4 = ofMap(z, 0, 255, 0.75, 1, true);
     
+    for(int j = 0; j < NUM_VIDS; j++){
+        fbo[j].begin();
+        ofSetColor(255, 255, 255, 255);
+        ofRect(0,0,400,300);
+        video[j].draw(0, 0, 400.0, 300.0);
+//        video[j].setPosition(playhead);
+        fbo[j].end();
+    
+    }
+/*
     fbo2.begin();
     ofSetColor(255, 255, 255, 255);
     ofRect(0,0,400,300);
@@ -137,16 +151,27 @@ void testApp::update(){
     ofRect(0,0,400,300);
     video.draw(0, 0, 400.0, 300.0);
     fbo4.end();
+ 
+ */
     
 }
 //--------------------------------------------------------------
 void testApp::draw(){
-        
-    fbo.draw(10.0, 150.0);
-    fbo2.draw(430.0, 150.0);
     
-    fbo3.draw(10.0, 460.0);
-    fbo4.draw(430.0, 460.0);
+    float xPos = 10.0;
+    float yPos = 150.0;
+    
+    for(int i = 0; i < NUM_VIDS; i++){
+        fbo[i].draw(xPos, yPos);
+        yPos += 310.0;
+
+        if (yPos == 770.0) {
+            yPos = 150.0;
+            xPos += 420.0;
+        } else if(xPos == 850.0){
+            xPos = 430.0;
+        }
+    }
     
     ofSetColor(10, 10, FSR);
     ofCircle(40,100,20);
@@ -165,7 +190,6 @@ void testApp::draw(){
 
     
 }
-
 //--------------------------------------------------------------
 void urlResponse(ofHttpResponse & response){
 
