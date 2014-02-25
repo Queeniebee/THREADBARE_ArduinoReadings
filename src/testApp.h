@@ -7,9 +7,6 @@
 #include "ofxOpenCv.h"
 #include <GLFW/glfw3.h>
 #include "GLFW/glfw3native.h"
-#include <Cocoa/Cocoa.h>
-#include <Carbon/Carbon.h>
-#include "ofAppGLFWWindow.h"
 
 #define NUM_VIDS 4
 
@@ -31,26 +28,17 @@ class testApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     void urlResponse(ofHttpResponse & response);
-    ofAppGLFWWindow * WINDOW;
 
     ofSerial serial;
     ofFbo fbo[NUM_VIDS];
     string paths[NUM_VIDS];
     
     ofVideoPlayer video[NUM_VIDS];
+    int x, y, z, FSR = 0;
+    int fadeAMT;
     
-    ofRectangle uiScreenRect;
-    vector<ofRectangle> screens;
-    int x; int y; int z;
-    int FSR = 10;
-    float playhead, playhead2, playhead3, playhead4;
+//    int setValues[NUM_VIDS];
+//    float playhead, playhead2, playhead3, playhead4;
     
     
 };
-
-struct screenSortClass {
-    bool operator()(ofRectangle a, ofRectangle b)
-    {
-        return a.x < b.x;
-        }
-    } screenSort;
