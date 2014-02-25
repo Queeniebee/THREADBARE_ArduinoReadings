@@ -10,7 +10,6 @@ void testApp::setup(){
     
     ofSetVerticalSync(true);
 //    ofSetFrameRate(60);
-//    ofSetWindowShape(1024,768);
     ofSetCircleResolution(100);
     
     x = 10;
@@ -31,9 +30,45 @@ void testApp::setup(){
         video[i].loadMovie(paths[i]);
         video[i].play();
     }
+//I need to toggle Fullscreen to activate it
     
+int monitorCount;
+    
+int leftMost = 0, topMost = 0;
+ 
+ GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+    cout<<"Monitor Count: "<<monitorCount<<endl;
 
+    for(int i = 0; i < monitorCount; i++){
+        int screenXX=0,screenYY=0, width=0, height=0;
+
+    ofRectangle screen;
+
+    glfwGetMonitorPos(monitors[i],&x,&y);
+    const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[i]);
+      
+    screen.x = screenXX;
+    screen.y = screenYY;
+    screen.width = desktopMode->width;
+    screen.height = desktopMode->height;
+
+    screens.push_back(screen);clearerr(<#FILE *#>)
     
+    if( leftMost > screen.x ) leftMost = screen.x;
+    if( topMost > screen.y ) topMost = screen.y;
+    
+    }
+
+    for(int i = 0; i < monitorCount; i++){
+        screens[i].x -= leftMost;
+        screens[i].y -= topMost;
+        
+    }
+	std::sort( screens.begin(), screens.end(), screenSort );
+    
+    uiScreenRect = screens.back();
+    
+    if(ofGetWindowMode() == OF_WINDOW) ofSetWindowPosition(20, 20);
 }
 
 //--------------------------------------------------------------
@@ -45,57 +80,10 @@ void testApp::update(){
     int bytesPreventOverwrite = bytesRequired - bytesRemaining;
 
     unsigned char bytesReturned[bytesRequired];
-/*
-// Documentation Way 
-    while (bytesRemaining > 0) {
-    
-        if(serial.available() > 0){
-
-            //cycling through all the bytes coming in from SerialPort
-            int bytesPreventOverwrite = bytesRequired - bytesRemaining;
-            int result = serial.readBytes(&bytesReturned[bytesPreventOverwrite], bytesRemaining);
-            
-            if ( result == OF_SERIAL_ERROR )
-            {
-                // something bad happened
-                ofLog( OF_LOG_ERROR, "unrecoverable error reading from serial" );
-                // bail out
-                break;
-            }
-            else if ( result == OF_SERIAL_NO_DATA )
-            {
-                // nothing was read, try again
-            }
-            else
-            {
-            
-            if (bytesReturned[result]=='1') {
-                x = bytesReturned[result+1];
-            } if (bytesReturned[result+2]=='2'){
-                y = bytesReturned[result+3];
-                
-            } if (bytesReturned[result+4]=='3'){
-                z = bytesReturned[result+5];
-                
-            } if(bytesReturned[result+6]=='4'){
-                FSR = bytesReturned[result+7];
-            }
-
-             bytesRemaining -= result;
-            }
-        
-            cout<<"From the Serial Port:"<<endl;
-        cout<<"A0: "<<x<<" A1: "<<y<<" A2: "<<z<<" A3: "<<FSR<<endl;
-        serial.flush();
-        serial.writeByte('A');
-
-    }
-    }
- */
     
    if(serial.available() > 0){
-//Found Code Way
-    serial.readBytes(&bytesReturned[bytesPreventOverwrite], bytesRemaining);
+
+       serial.readBytes(&bytesReturned[bytesPreventOverwrite], bytesRemaining);
         if (bytesReturned[0]=='1') {
             x = bytesReturned[1];
         } if (bytesReturned[2]=='2'){
@@ -133,26 +121,6 @@ void testApp::update(){
         fbo[j].end();
     
     }
-/*
-    fbo2.begin();
-    ofSetColor(255, 255, 255, 255);
-    ofRect(0,0,400,300);
-    video.draw(0, 0, 400.0, 300.0);
-    fbo2.end();
-
-    fbo3.begin();
-    ofSetColor(255, 255, 255, 255);
-    ofRect(0,0,400,300);
-    video.draw(0, 0, 400.0, 300.0);
-    fbo3.end();
-    
-    fbo4.begin();
-    ofSetColor(255, 255, 255, 255);
-    ofRect(0,0,400,300);
-    video.draw(0, 0, 400.0, 300.0);
-    fbo4.end();
- 
- */
     
 }
 //--------------------------------------------------------------
@@ -172,6 +140,7 @@ void testApp::draw(){
             xPos = 430.0;
         }
     }
+ 
     
     ofSetColor(10, 10, FSR);
     ofCircle(40,100,20);
@@ -184,6 +153,9 @@ void testApp::draw(){
 
     ofSetColor(10, 0, z);
     ofCircle(300,100,20);
+    
+    float d = ofGetLastFrameTime();
+//    ofRect(uiScreenRect.x, uiScreenRect.y, 500, 700);
     
     cout<<"On the Screen"<<endl;
     cout<<"A0: "<<x<<" A1: "<<y<<" A2: "<<z<<" A3: "<<FSR<<endl;
@@ -198,6 +170,11 @@ void urlResponse(ofHttpResponse & response){
 }
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+    if(key == 'D'){
+    
+        ofToggleFullscreen();
+    
+    }
 
 }
 
