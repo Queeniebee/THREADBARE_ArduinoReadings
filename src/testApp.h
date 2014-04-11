@@ -35,7 +35,7 @@ class testApp : public ofBaseApp{
     
     ofVideoPlayer video[NUM_VIDS];
     int x, y, z, FSR = 0;
-    int fadeAMT;
+    int fadeAMT[NUM_VIDS];
     
 //    int setValues[NUM_VIDS];
 //    float playhead, playhead2, playhead3, playhead4;

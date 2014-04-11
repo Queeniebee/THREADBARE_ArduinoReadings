@@ -62,21 +62,24 @@ void testApp::update(){
        serial.readBytes(&bytesReturned[bytesPreventOverwrite], bytesRemaining);
         if (bytesReturned[0]=='1') {
             x = bytesReturned[1];
-           
+            cout<<"A0: "<<x<<endl;
             
         } if (bytesReturned[2]=='2'){
             y = bytesReturned[3];
+             cout<<"A1: "<<y<<endl;
             
         } if (bytesReturned[4]=='3'){
             z = bytesReturned[5];
+             cout<<"A2: "<<z<<endl;
             
-        } if(bytesReturned[6]=='4'){
-            FSR = bytesReturned[7];
         }
+       /*if(bytesReturned[6]=='4'){
+            FSR = bytesReturned[7];
+            cout<<"A3: "<<FSR<<endl;
+        }*/
 
         cout<<"From the Serial Port:"<<endl;
-        cout<<"A0: "<<x<<" A1: "<<y<<" A2: "<<z<<" A3: "<<FSR<<endl;
-//       cout<<"setValues[0]: "<<setValues[0]<<"setValues[1]: "<<setValues[1]<<"setValues[2]: "<<setValues[2]<<"setValues[3]: "<<setValues[3]<<endl;
+
         serial.flush();
         serial.writeByte('A');
     
@@ -92,12 +95,12 @@ void testApp::update(){
 //    playhead4 = ofMap(z, 0, 255, 0.75, 1, true);
 
     //I don't know why not getting clean results when iterating through an INT ARRAY    
-//    fadeAMT[0] = x; fadeAMT[1] = y; fadeAMT[2] = z; fadeAMT[3] = FSR;
+    fadeAMT[0] = x; fadeAMT[1] = y; fadeAMT[2] = z; fadeAMT[3] = FSR;
 
     
     for(int j = 0; j < NUM_VIDS; j++){
         fbo[j].begin();
-        ofSetColor(255, 255, 255, fadeAMT);
+        ofSetColor(255, 255, 255, fadeAMT[j]);
         ofRect(0,0,400,300);
         video[j].draw(0, 0, 400.0, 300.0);
         fbo[j].end();
@@ -147,20 +150,20 @@ void testApp::keyPressed(int key){
     
     }
     
-    
-    if(key == 'l'){
-        fadeAMT = x;
-    
-    } if(key == 'k'){
-        fadeAMT = y;
-    
-    } if(key == 'j'){
-        fadeAMT = FSR;
-    
-    } if(key =='h') {
-    
-        fadeAMT = z;
-    }
+//    
+//    if(key == 'l'){
+//        fadeAMT = x;
+//    
+//    } if(key == 'k'){
+//        fadeAMT = y;
+//    
+//    } if(key == 'j'){
+//        fadeAMT = FSR;
+//    
+//    } if(key =='h') {
+//    
+//        fadeAMT = z;
+//    }
 
     
     
